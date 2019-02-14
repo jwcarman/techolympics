@@ -4,17 +4,21 @@
 
 1. Open the ```Registration``` class.
 
-2. Add validation constraints to the fields.
+2. Add validation constraints to all of the fields.
+
     - Is it okay for the ```lastName``` to be null?
+    
     - Is it okay for the ```lastName``` to be empty?
    
 3. Open the ```RegistrationService``` interface.
 
 4. Modify the ```registerStudent``` method to ensure that the ```Registration``` objects are valid.
+    
+    - Don't forget to add ```@Validated``` to the interface itself to turn on validation.
 
 5. Test it out using Swagger
-
-    - What HTTP status did you receive when your request was invalid?
+     
+    - What HTTP status did you receive when your request was invalid? 
 
 ### Handle ConstraintViolationExceptions
 
