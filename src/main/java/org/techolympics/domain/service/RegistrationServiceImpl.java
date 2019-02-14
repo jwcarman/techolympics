@@ -1,23 +1,22 @@
 package org.techolympics.domain.service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
+import com.google.common.collect.Lists;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.techolympics.domain.entity.Registration;
 import org.techolympics.domain.exception.RegistrationNotFoundException;
-
-import static java.util.Optional.ofNullable;
+import org.techolympics.domain.repository.RegistrationRepository;
 
 @Service
+@RequiredArgsConstructor
 public class RegistrationServiceImpl implements RegistrationService {
 //----------------------------------------------------------------------------------------------------------------------
 // Fields
 //----------------------------------------------------------------------------------------------------------------------
 
-    private final Map<String, Registration> registrations = new ConcurrentHashMap<>();
+    private final RegistrationRepository repository;
 
 //----------------------------------------------------------------------------------------------------------------------
 // RegistrationService Implementation
@@ -25,21 +24,21 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     public List<Registration> getAllRegistrations() {
-        return new ArrayList<>(registrations.values());
+        return Lists.newArrayList(repository.findAll());
     }
 
     @Override
     public Registration getStudentRegistration(String email) {
-        return ofNullable(registrations.get(email)).orElseThrow(() -> new RegistrationNotFoundException(email));
+        return repository.findById(email).orElseThrow(() -> new RegistrationNotFoundException(email));
     }
 
     @Override
     public void registerStudent(Registration registration) {
-        registrations.put(registration.getEmail(), registration);
+        repository.save(registration);
     }
 
     @Override
     public void unregisterStudent(String email) {
-        registrations.remove(email);
+        repository.deleteById(email);
     }
 }
