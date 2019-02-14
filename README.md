@@ -1,95 +1,33 @@
-# Persisting Data With Spring Data JPA
+# Validating Data With the Bean Validation (JSR-380)
 
-### Create the Entity
+### Validate Registrations
 
-1. Add an ```@Entity``` annotation to the ```Registration``` class.
+1. Open the ```Registration``` class.
 
-2. Add an ```@Id``` annotation to the ```email``` field of the ```Registration``` class.
-    
-### Create the Repository
+2. Add validation constraints to the fields.
+    - Is it okay for the ```lastName``` to be null?
+    - Is it okay for the ```lastName``` to be empty?
+   
+3. Open the ```RegistrationService``` interface.
 
-1. Modify the ```RegistrationRepository``` interface to make it extend ```CrudRepository```:
+4. Modify the ```registerStudent``` method to ensure that the ```Registration``` objects are valid.
 
-    ```java
-    public interface RegistrationRepository extends CrudRepository<Registration,String> {
-    }
-    ```
+5. Test it out using Swagger
+
+    - What HTTP status did you receive when your request was invalid?
+
+### Handle ConstraintViolationExceptions
+
+1. Open the ```ErrorHandlerAdvice```class.
+
+2. Add a method to handle the ```ConstraintViolationException``` exception type.
+
+    - What HTTP status should be returned?
         
-### Use the Repository
+### Validate Emails
 
-1. Modify the ```RegistrationServiceImpl``` class to use the newly-created ```RegistrationRepository```:
+1. Modify the ```getStudentRegistration()``` and ```unregisterStudent()``` methods to validate that the ```email``` parameter passed in is a valid email address.
+   
+### Custom Error Messages
 
-    ```java
-    @Service
-    public class RegistrationServiceImpl implements RegistrationService {
-    
-        private final RegistrationRepository repository;
-    
-    
-        public RegistrationServiceImpl(RegistrationRepository repository) {
-            this.repository = repository;
-        }
-    
-        @Override
-        public List<Registration> getAllRegistrations() {
-            return Lists.newArrayList(repository.findAll());
-        }
-    
-        @Override
-        public Registration getStudentRegistration(String email) {
-            return repository.findById(email).orElseThrow(() -> new RegistrationNotFoundException(email));
-        }
-    
-        @Override
-        public void registerStudent(Registration registration) {
-            repository.save(registration);
-        }
-    
-        @Override
-        public void unregisterStudent(String email) {
-            if(!repository.existsById(email)) {
-                throw new RegistrationNotFoundException(email);
-            }
-            repository.deleteById(email);
-        }
-    }
-    ```
-
-2. Try registering a new student in the browser. Do they show up in the list of registrations?
-    
-3. Restart your application and list the registrations again.
-
-    - Is your new student still listed?
-    
-### Creating a Custom Finder Method
-
-1. Add the following method to the ```RegistrationRepository``` interface:
-
-    ```java
-    Iterable<Registration> findBySchool(String school);
-    ```
-
-2. Add the following method to the ```RegistrationServiceImpl``` class:
-
-    ```java
-    public List<Registration> getRegistrationsBySchool(String school) {
-        return Lists.newArrayList(repository.findBySchool(school));
-    }
-    ```
-
-2. Right click on the new ```getRegistrationsBySchool``` method in ```RegistrationServiceImpl``` and select ```Refactor -> Pull Members Up```.
-
-3. Click ```Refactor```.
-
-4. Add the following method to the ```RegistrationsController``` class:
-
-    ```java
-    @GetMapping("/schools/{school}")
-    public List<Registration> getRegistrationsBySchool(@PathVariable("school") String school) {
-        return registrationService.getRegistrationsBySchool(school);
-    }
-    ```
-    
-5. Try our the new endpoint in your browser.
-    
-    - Are you able to find registrations by school?
+1. The ```ValidationMessages.properties``` file already contains some custom error messages.  Modify your annotations to use them.
