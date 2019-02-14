@@ -54,6 +54,12 @@
 ### Registering Some Students (Optional)
  
 1. Find the ```TecholympicsConfiguration``` class in the ```src/main/java``` directory.
+
 2. The ```CommandLineRunner``` will be called on application startup, so let's use this to register some students
+
 3. Use the injected ```RegistrationService``` object to register some students.
+
+4. Be sure to tell Spring about your newly-created ```CommandLineRunner```
+    - How do we tell Spring about new beans in a ```@Configuration``` class?
+    
 4. Open up Swagger again and see the students you registered.
