@@ -1,33 +1,33 @@
-# Persisting Data With Spring Data JPA
+# Validating Data With the Bean Validation (JSR-380)
 
-### Create the Entity
+### Validate Registrations
 
 1. Open the ```Registration``` class.
 
-2. Add an ```@Entity``` annotation to the class.
+2. Add validation constraints to the fields.
+    - Is it okay for the ```lastName``` to be null?
+    - Is it okay for the ```lastName``` to be empty?
+   
+3. Open the ```RegistrationService``` interface.
 
-3. Add an ```@Id``` annotation to the appropriate field.
+4. Modify the ```registerStudent``` method to ensure that the ```Registration``` objects are valid.
 
-    - What field should be the identifier?
-    
-### Create the Repository
+5. Test it out using Swagger
 
-1. Open the ```RegistrationRepository```interface.
+    - What HTTP status did you receive when your request was invalid?
 
-2. Using Spring Data, modify ```RegistrationRepository``` so that it supports simple create, retrieve, update, and delete (CRUD)
+### Handle ConstraintViolationExceptions
 
-    - How do we register an instance with Spring?
+1. Open the ```ErrorHandlerAdvice```class.
+
+2. Add a method to handle the ```ConstraintViolationException``` exception type.
+
+    - What HTTP status should be returned?
         
-### Use the Repository
+### Validate Emails
 
-1. Convert the ```RegistrationService``` to use the ```RegistrationRepository``` rather than using the in-memory map we have been using thus far.
+1. Modify the ```getStudentRegistration()``` and ```unregisterStudent()``` methods to validate that the ```email``` parameter passed in is a valid email address.
+   
+### Custom Error Messages
 
-    - The ```Lists``` from the Google Guava library which might be useful.
-
-### Creating a Custom Finder (Optional)
-
-1. Add a new method to the ```RegistrationRepository``` which allows you to find a ```List<Registration>``` by school name.
-
-2. Add a new method to the ```RegistrationService``` which uses this new method.
-
-2. Add a new endpoint to the ```RegistrationsController``` which allows you to retrieve registrations by school name. 
+1. The ```ValidationMessages.properties``` file already contains some custom error messages.  Modify your annotations to use them.
