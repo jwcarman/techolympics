@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.stereotype.Service;
 import org.techolympics.domain.entity.Registration;
 import org.techolympics.domain.exception.RegistrationNotFoundException;
 
 import static java.util.Optional.ofNullable;
 
+@Service
 public class RegistrationServiceImpl implements RegistrationService {
 //----------------------------------------------------------------------------------------------------------------------
 // Fields
