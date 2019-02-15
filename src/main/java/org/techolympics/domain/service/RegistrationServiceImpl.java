@@ -44,4 +44,9 @@ public class RegistrationServiceImpl implements RegistrationService {
             throw new RegistrationNotFoundException(email);
         }
     }
+
+    @Override
+    public List<Registration> getSchoolRegistrations(String school) {
+        return Lists.newArrayList(repository.findBySchool(school));
+    }
 }
