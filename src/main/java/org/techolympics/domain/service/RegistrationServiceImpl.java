@@ -41,4 +41,9 @@ public class RegistrationServiceImpl implements RegistrationService {
     public void unregisterStudent(String email) {
         repository.deleteById(email);
     }
+
+    @Override
+    public List<Registration> getSchoolRegistrations(String school) {
+        return Lists.newArrayList(repository.findBySchool(school));
+    }
 }
