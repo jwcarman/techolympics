@@ -43,4 +43,6 @@ public interface RegistrationService {
      * @param email the email address
      */
     void unregisterStudent(String email);
+
+    List<Registration> getSchoolRegistrations(String school);
 }

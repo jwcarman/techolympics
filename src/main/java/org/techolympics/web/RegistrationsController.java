@@ -51,6 +51,11 @@ public class RegistrationsController {
         return registrationService.getAllRegistrations();
     }
 
+    @GetMapping("/schools/{school}")
+    public List<Registration> getRegistrationsBySchool(String school) {
+        return registrationService.getSchoolRegistrations(school);
+    }
+
     @PutMapping("/{email}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void putRegistration(@RequestParam(value = "email") String email, @RequestBody PutRegistrationRequest request) {
