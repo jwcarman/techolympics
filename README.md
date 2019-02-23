@@ -1,26 +1,29 @@
 # Spring Core
 
-### Dependency Injection
+1. Add the following field to the ```RegistrationsController``` class:
 
-1. Find the ```RegistrationsControllerTest``` class found in the ```src/test/java``` directory.
-
-2. Right click on the class and select ```Run RegistrationsControllerTest```.
-    - The test should fail, but why did it fail?
-   
-3. Find the ```RegistrationsController``` class in the ```src/main/java``` directory.
-
-4. Refactor the ```getRegistrations()``` method to delegate to a ```RegistrationService``` object's ```getAllRegistrations()``` method.
-    - How will the ```RegistrationsController``` object obtain a reference to a ```RegistrationService``` object?
+    ```java
+    private final RegistrationService registrationService;
+    ```
     
-5. Run the ```RegistrationsControllerTest``` again and make sure the test is "green."
+2. Since this field is final, we need to add a constructor which initializes this field:
 
-### Declaring a Spring Bean
+    ```java
+    public RegistrationsController(RegistrationService registrationService) {
+        this.registrationService = registrationService;
+    }
+    ```
 
-1. Find the ```TecholympicsApplicationTest``` class found in the ```src/test/java/``` directory.
+3. Refactor the ```getRegistrations()``` method to delegate to the injected ```RegistrationService```:
 
-2. Right click on the class and select ```Run TecholympicsApplicationTest```.
-
-3. The test should fail with a message similar to the following:
+    ```java
+    @GetMapping
+    public List<Registration> getRegistrations() {
+        return registrationService.getAllRegistrations();
+    }
+    ```
+    
+4. Right click the ```TecholympicsApplication``` class and select "Run TecholympicsApplication". The application should fail to start with the following message:
 
     ```text
     ***************************
@@ -36,30 +39,41 @@
     
     Consider defining a bean of type 'org.techolympics.domain.service.RegistrationService' in your configuration.
     ```
-    
-4. Follow the instructions in the error message to fix the issue and make sure the test is "green."
-    - How do we define a new "bean"?
-    - What (stereo) type of bean is it?
-    - _Hint: there's already a ```RegistrationServiceImpl``` class available which implements ```RegistrationService```._
-    
-### Get Your Swagger On!
 
-1. Find the ```TecholympicsApplication``` class found in the ```src/main/java``` directory.
-2. Right click on the class and select ```Run TechnolymipcsApplication```.
-3. Open up the following URL in your browser:
+5. Spring doesn't have any beans of type ```RegistrationService```. Add the ```@Component``` stereotype annotation to the ```RegistrationServiceImpl``` class. 
+
+6. Now, right click the ```TecholympicsApplication``` class and select "Run TecholympicsApplication" again.  The application should start successfully.
+ 
+7. Open up the following URL in your browser:
 
     http://localhost:8080/swagger-ui.html
-4. Locate the ```/registrations``` endpoint and "Try it out"
-
-### Registering Some Students (Optional)
  
-1. Find the ```TecholympicsConfiguration``` class in the ```src/main/java``` directory.
-
-2. The ```CommandLineRunner``` will be called on application startup, so let's use this to register some students
-
-3. Use the injected ```RegistrationService``` object to register some students.
-
-4. Be sure to tell Spring about your newly-created ```CommandLineRunner```
-    - How do we tell Spring about new beans in a ```@Configuration``` class?
+8. Locate the ```/registrations``` endpoint and "Try it out"
     
-4. Open up Swagger again and see the students you registered.
+9. Currently, there are no registered students.  Modify the ```TecholympicsConfiguration``` class by adding the following method:
+
+    ```java
+    @Bean
+    public CommandLineRunner dataLoader(RegistrationService service) {
+        return args -> {
+            final Registration johnDoe = new Registration();
+            johnDoe.setEmail("john@doe.com");
+            johnDoe.setFirstName("Joe");
+            johnDoe.setLastName("Doe");
+            johnDoe.setSchool("Mason");
+    
+            service.registerStudent(johnDoe);
+    
+            final Registration janeDoe = new Registration();
+            janeDoe.setEmail("jane@doe.com");
+            janeDoe.setFirstName("Jane");
+            janeDoe.setLastName("Doe");
+            janeDoe.setSchool("Sycamore");
+    
+            service.registerStudent(janeDoe);
+        };
+    }
+    ```
+10. Build the project (Ctrl-F9).  The Spring Boot Devtools should reload your application.
+
+11. Go back to your browser and try the ```/registrations``` endpoint again.  You should see some student data!  
