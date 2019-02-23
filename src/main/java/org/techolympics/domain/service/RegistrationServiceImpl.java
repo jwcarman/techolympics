@@ -1,13 +1,13 @@
 package org.techolympics.domain.service;
 
+import org.springframework.stereotype.Service;
+import org.techolympics.domain.entity.Registration;
+import org.techolympics.domain.exception.RegistrationNotFoundException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.springframework.stereotype.Service;
-import org.techolympics.domain.entity.Registration;
-import org.techolympics.domain.exception.RegistrationNotFoundException;
 
 import static java.util.Optional.ofNullable;
 
@@ -40,6 +40,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     public void unregisterStudent(String email) {
-        registrations.remove(email);
+        if (registrations.remove(email) == null) {
+            throw new RegistrationNotFoundException(email);
+        }
     }
 }
