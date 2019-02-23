@@ -29,4 +29,27 @@ public class RegistrationsController {
     public List<Registration> getRegistrations() {
         return registrationService.getAllRegistrations();
     }
+
+    @PutMapping("/{email}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void registerStudent(@PathVariable("email") String email, @RequestBody RegisterStudentRequest request) {
+
+        final Registration registration = new Registration();
+        registration.setEmail(email);
+        registration.setFirstName(request.getFirstName());
+        registration.setLastName(request.getLastName());
+        registration.setSchool(request.getSchool());
+
+        registrationService.registerStudent(registration);
+    }
+
+    @GetMapping("/{email}")
+    public Registration getRegistration(@PathVariable("email") String email) {
+        return registrationService.getStudentRegistration(email);
+    }
+
+    @DeleteMapping("/{email}")
+    public void unregisterStudent(@PathVariable("email") String email) {
+        registrationService.unregisterStudent(email);
+    }
 }
