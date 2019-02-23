@@ -1,33 +1,59 @@
-# Validating Data With the Bean Validation (JSR-380)
+# Validating Data With the Bean Validation API (JSR-380)
 
 ### Validate Registrations
 
-1. Open the ```Registration``` class.
+1. Add a ```@Validated``` annotation to the ```RegistrationService``` interface.
 
-2. Add validation constraints to the fields.
-    - Is it okay for the ```lastName``` to be null?
-    - Is it okay for the ```lastName``` to be empty?
+2. Add ```@NotNull``` and ```@Valid``` annotations to the ```Registration``` parameter of the ```registerStudent()``` method in the ```RegistrationService``` interface.
+
+3. Add an ```@Email``` annotation to the ```email``` field in the ```Registration``` class.
+    
+4. Add ```@NotEmpty``` constraints to the rest of the fields in the ```Registration``` class.
+
+5. In your browser, try to register a student with a invalid data.
+       
+    - What happens?
    
-3. Open the ```RegistrationService``` interface.
 
-4. Modify the ```registerStudent``` method to ensure that the ```Registration``` objects are valid.
+### Validate Email Parameters
 
-5. Test it out using Swagger
+1. Add an ```@Email``` annotation to the ```email``` parameter of the ```getStudentRegistration()``` and ```unregisterStudent()``` methods in the ```RegistrationService``` interface.
 
-    - What HTTP status did you receive when your request was invalid?
+2. In your browser, try to pass an invalid email address to either of these methods.
+
+    - What happens?
 
 ### Handle ConstraintViolationExceptions
 
-1. Open the ```ErrorHandlerAdvice```class.
+1. Add the following method to the ```ErrorHandlerAdvice``` class:
 
-2. Add a method to handle the ```ConstraintViolationException``` exception type.
+    ```java
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public List<String> onConstraintViolation(ConstraintViolationException e) {
+        return e.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.toList());
+    }
+    ```
 
-    - What HTTP status should be returned?
-        
-### Validate Emails
+2. In your browser, perform an operation that violates a validation constraint.
 
-1. Modify the ```getStudentRegistration()``` and ```unregisterStudent()``` methods to validate that the ```email``` parameter passed in is a valid email address.
-   
+    - What happens now?
+           
 ### Custom Error Messages
 
-1. The ```ValidationMessages.properties``` file already contains some custom error messages.  Modify your annotations to use them.
+1. Modify the ```@Email``` constraint on the ```email``` field in the ```Registration``` class:
+
+    ```java
+    @Email(message = "{registration.email.invalid}")
+    ```
+2. Add the following line to the ```ValidationMessages.properties``` file:
+
+    ```properties
+    registration.email.invalid=Registration email value "${validatedValue}" is invalid.
+    ```
+
+2. Try to register a student with an invalid email address.
+
+    - Do you see your custom message?
