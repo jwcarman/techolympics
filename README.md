@@ -54,6 +54,8 @@
     registration.email.invalid=Registration email value "${validatedValue}" is invalid.
     ```
 
-2. Try to register a student with an invalid email address.
+3. Try to register a student with an invalid email address.
 
     - Do you see your custom message?
+
+4. **BONUS**: figure out how to use the other error messages in the ```ValidationMessages.properties``` file.
