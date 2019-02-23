@@ -9,9 +9,4 @@ import org.techolympics.domain.exception.RegistrationNotFoundException;
 @RestControllerAdvice
 public class ErrorHandlerAdvice {
 
-    @ExceptionHandler(RegistrationNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String onRegistrationNotFound(RegistrationNotFoundException e) {
-        return e.getMessage();
-    }
 }
