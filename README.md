@@ -1,30 +1,79 @@
-# Writing a @RestController
+# Spring Core
 
-### Register a Student
+1. Add the following field to the ```RegistrationsController``` class:
 
-1. Add a new ```registerStudent()``` method to the ```RegistrationsController``` class:
-    - It should match ```PUT /registrations/{email}``` requests.
-    - It should return an HTTP ```204 No Content``` status on success.
-    - The registration data should be obtained from the body of the request.
-    - Does the body need to contain the email address?
-    - Why did we use ```PUT``` to create a new object? I thought that was only for updates.
+    ```java
+    private final RegistrationService registrationService;
+    ```
     
-### Get a Registration
+2. Since this field is final, we need to add a constructor which initializes this field:
 
-1. Add a new ```getRegistration()``` method to the ```RegistrationController``` class:
-    - It should match ```GET /registrations/{email}``` requests.
-    - The response should contain the registration data for the specified email address.
+    ```java
+    public RegistrationsController(RegistrationService registrationService) {
+        this.registrationService = registrationService;
+    }
+    ```
+
+3. Refactor the ```getRegistrations()``` method to delegate to the injected ```RegistrationService```:
+
+    ```java
+    @GetMapping
+    public List<Registration> getRegistrations() {
+        return registrationService.getAllRegistrations();
+    }
+    ```
     
-### Unregistering a Student
+4. Right click the ```TecholympicsApplication``` class and select "Run TecholympicsApplication". The application should fail to start with the following message:
 
-1. Add a new ```unregisterStudent``` method to the ```RegistrationsController``` class:
-    - It should match ```DELETE /registrations/{email}``` requests.
-    - It should return an HTTP ```204 No Content``` status on success.
-    - Does it need a request body?
-    - What should happen if it is called more than once? 
+    ```text
+    ***************************
+    APPLICATION FAILED TO START
+    ***************************
     
-### Error Handling (Optional)
+    Description:
+    
+    Parameter 0 of constructor in org.techolympics.web.RegistrationsController required a bean of type 'org.techolympics.domain.service.RegistrationService' that could not be found.
+    
+    
+    Action:
+    
+    Consider defining a bean of type 'org.techolympics.domain.service.RegistrationService' in your configuration.
+    ```
 
-1. Open the ```ErrorHandlerAdvice``` class.
-2. Change the ```onRegistrationNotFound()``` method to return an HTTP ```404 Not Found``` status.
-3. Verify your work using Swagger.  
+5. Spring doesn't have any beans of type ```RegistrationService```. Add the ```@Component``` stereotype annotation to the ```RegistrationServiceImpl``` class. 
+
+6. Now, right click the ```TecholympicsApplication``` class and select "Run TecholympicsApplication" again.  The application should start successfully.
+ 
+7. Open up the following URL in your browser:
+
+    http://localhost:8080/swagger-ui.html
+ 
+8. Locate the ```/registrations``` endpoint and "Try it out"
+    
+9. Currently, there are no registered students.  Modify the ```TecholympicsConfiguration``` class by adding the following method:
+
+    ```java
+    @Bean
+    public CommandLineRunner dataLoader(RegistrationService service) {
+        return args -> {
+            final Registration johnDoe = new Registration();
+            johnDoe.setEmail("john@doe.com");
+            johnDoe.setFirstName("Joe");
+            johnDoe.setLastName("Doe");
+            johnDoe.setSchool("Mason");
+    
+            service.registerStudent(johnDoe);
+    
+            final Registration janeDoe = new Registration();
+            janeDoe.setEmail("jane@doe.com");
+            janeDoe.setFirstName("Jane");
+            janeDoe.setLastName("Doe");
+            janeDoe.setSchool("Sycamore");
+    
+            service.registerStudent(janeDoe);
+        };
+    }
+    ```
+10. Build the project (Ctrl-F9).  The Spring Boot Devtools should reload your application.
+
+11. Go back to your browser and try the ```/registrations``` endpoint again.  You should see some student data!  
