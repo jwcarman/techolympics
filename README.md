@@ -40,7 +40,7 @@
     Consider defining a bean of type 'org.techolympics.domain.service.RegistrationService' in your configuration.
     ```
 
-5. Spring doesn't have any beans of type ```RegistrationService```. Add the ```@Component``` stereotype annotation to the ```RegistrationServiceImpl``` class. 
+5. Spring doesn't have any beans of type ```RegistrationService```. Add the ```@Service``` stereotype annotation to the ```RegistrationServiceImpl``` class. 
 
 6. Now, right click the ```TecholympicsApplication``` class and select "Run TecholympicsApplication" again.  The application should start successfully.
  

@@ -13,8 +13,14 @@ import org.techolympics.domain.service.RegistrationService;
 @RequestMapping("/registrations")
 public class RegistrationsController {
 
+    private final RegistrationService registrationService;
+
+    public RegistrationsController(RegistrationService registrationService) {
+        this.registrationService = registrationService;
+    }
+
     @GetMapping
     public List<Registration> getRegistrations() {
-        return null;
+        return registrationService.getAllRegistrations();
     }
 }
