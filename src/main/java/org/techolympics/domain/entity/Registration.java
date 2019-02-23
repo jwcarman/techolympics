@@ -2,6 +2,8 @@ package org.techolympics.domain.entity;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import java.util.Objects;
 
 @Entity
@@ -11,12 +13,16 @@ public class Registration {
 //----------------------------------------------------------------------------------------------------------------------
 
     @Id
+    @Email(message = "{registration.email.invalid}")
     private String email;
 
+    @NotEmpty(message="{registration.firstName.required}")
     private String firstName;
 
+    @NotEmpty(message="{registration.lastName.required}")
     private String lastName;
 
+    @NotEmpty(message="{registration.school.required}")
     private String school;
 
 //----------------------------------------------------------------------------------------------------------------------
