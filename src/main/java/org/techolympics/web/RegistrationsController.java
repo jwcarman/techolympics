@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,12 +38,12 @@ public class RegistrationsController {
 
     @DeleteMapping("/{email}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteRegistration(@RequestParam(value = "email") String email) {
+    public void deleteRegistration(@PathVariable(value = "email") String email) {
         registrationService.unregisterStudent(email);
     }
 
     @GetMapping("/{email}")
-    public Registration getRegistration(@RequestParam(value = "email") String email) {
+    public Registration getRegistration(@PathVariable(value = "email") String email) {
         return registrationService.getStudentRegistration(email);
     }
 
@@ -53,7 +54,7 @@ public class RegistrationsController {
 
     @PutMapping("/{email}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void putRegistration(@RequestParam(value = "email") String email, @RequestBody PutRegistrationRequest request) {
+    public void putRegistration(@PathVariable(value = "email") String email, @RequestBody PutRegistrationRequest request) {
         registrationService.registerStudent(Registration.builder()
                 .email(email)
                 .firstName(request.getFirstName())
