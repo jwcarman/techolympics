@@ -1,8 +1,10 @@
 package org.techolympics.domain.service;
 
+import com.google.common.collect.Lists;
 import org.springframework.stereotype.Service;
 import org.techolympics.domain.entity.Registration;
 import org.techolympics.domain.exception.RegistrationNotFoundException;
+import org.techolympics.domain.repository.RegistrationRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,40 +15,39 @@ import static java.util.Optional.ofNullable;
 
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
-//----------------------------------------------------------------------------------------------------------------------
-// Fields
-//----------------------------------------------------------------------------------------------------------------------
 
-    private final Map<String, Registration> registrations = new ConcurrentHashMap<>();
+    private final RegistrationRepository repository;
 
-//----------------------------------------------------------------------------------------------------------------------
-// RegistrationService Implementation
-//----------------------------------------------------------------------------------------------------------------------
+
+    public RegistrationServiceImpl(RegistrationRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     public List<Registration> getAllRegistrations() {
-        return new ArrayList<>(registrations.values());
+        return Lists.newArrayList(repository.findAll());
     }
 
     @Override
     public Registration getStudentRegistration(String email) {
-        return ofNullable(registrations.get(email)).orElseThrow(() -> new RegistrationNotFoundException(email));
+        return repository.findById(email).orElseThrow(() -> new RegistrationNotFoundException(email));
     }
 
     @Override
     public void registerStudent(Registration registration) {
-        registrations.put(registration.getEmail(), registration);
+        repository.save(registration);
     }
 
     @Override
     public void unregisterStudent(String email) {
-        if (registrations.remove(email) == null) {
+        if(!repository.existsById(email)) {
             throw new RegistrationNotFoundException(email);
         }
+        repository.deleteById(email);
     }
 
     @Override
-    public List<Registration> getSchoolRegistrations(String school) {
+    public List<Registration> getRegistrationsBySchool(String school) {
         return Lists.newArrayList(repository.findBySchool(school));
     }
 }

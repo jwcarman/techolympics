@@ -52,4 +52,9 @@ public class RegistrationsController {
     public void unregisterStudent(@PathVariable("email") String email) {
         registrationService.unregisterStudent(email);
     }
+
+    @GetMapping("/schools/{school}")
+    public List<Registration> getRegistrationsBySchool(@PathVariable("school") String school) {
+        return registrationService.getRegistrationsBySchool(school);
+    }
 }

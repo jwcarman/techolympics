@@ -1,12 +1,16 @@
 package org.techolympics.domain.entity;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.Objects;
 
+@Entity
 public class Registration {
 //----------------------------------------------------------------------------------------------------------------------
 // Fields
 //----------------------------------------------------------------------------------------------------------------------
 
+    @Id
     private String email;
 
     private String firstName;

@@ -20,6 +20,8 @@ public interface RegistrationService {
      */
     List<Registration> getAllRegistrations();
 
+    List<Registration> getRegistrationsBySchool(String school);
+
     /**
      * Returns a specific student registration by email address or throws {@link RegistrationNotFoundException} if
      * not found.
@@ -43,6 +45,4 @@ public interface RegistrationService {
      * @param email the email address
      */
     void unregisterStudent(String email);
-
-    List<Registration> getSchoolRegistrations(String school);
 }
