@@ -1,37 +1,79 @@
-# Validating Data With the Bean Validation (JSR-380)
+# Spring Core
 
-### Validate Registrations
+1. Add the following field to the ```RegistrationsController``` class:
 
-1. Open the ```Registration``` class.
-
-2. Add validation constraints to all of the fields.
-
-    - Is it okay for the ```lastName``` to be null?
+    ```java
+    private final RegistrationService registrationService;
+    ```
     
-    - Is it okay for the ```lastName``` to be empty?
-   
-3. Open the ```RegistrationService``` interface.
+2. Since this field is final, we need to add a constructor which initializes this field:
 
-4. Modify the ```registerStudent``` method to ensure that the ```Registration``` objects are valid.
+    ```java
+    public RegistrationsController(RegistrationService registrationService) {
+        this.registrationService = registrationService;
+    }
+    ```
+
+3. Refactor the ```getRegistrations()``` method to delegate to the injected ```RegistrationService```:
+
+    ```java
+    @GetMapping
+    public List<Registration> getRegistrations() {
+        return registrationService.getAllRegistrations();
+    }
+    ```
     
-    - Don't forget to add ```@Validated``` to the interface itself to turn on validation.
+4. Right click the ```TecholympicsApplication``` class and select "Run TecholympicsApplication". The application should fail to start with the following message:
 
-5. Test it out using Swagger
-     
-    - What HTTP status did you receive when your request was invalid? 
+    ```text
+    ***************************
+    APPLICATION FAILED TO START
+    ***************************
+    
+    Description:
+    
+    Parameter 0 of constructor in org.techolympics.web.RegistrationsController required a bean of type 'org.techolympics.domain.service.RegistrationService' that could not be found.
+    
+    
+    Action:
+    
+    Consider defining a bean of type 'org.techolympics.domain.service.RegistrationService' in your configuration.
+    ```
 
-### Handle ConstraintViolationExceptions
+5. Spring doesn't have any beans of type ```RegistrationService```. Add the ```@Component``` stereotype annotation to the ```RegistrationServiceImpl``` class. 
 
-1. Open the ```ErrorHandlerAdvice```class.
+6. Now, right click the ```TecholympicsApplication``` class and select "Run TecholympicsApplication" again.  The application should start successfully.
+ 
+7. Open up the following URL in your browser:
 
-2. Add a method to handle the ```ConstraintViolationException``` exception type.
+    http://localhost:8080/swagger-ui.html
+ 
+8. Locate the ```/registrations``` endpoint and "Try it out"
+    
+9. Currently, there are no registered students.  Modify the ```TecholympicsConfiguration``` class by adding the following method:
 
-    - What HTTP status should be returned?
-        
-### Validate Emails
+    ```java
+    @Bean
+    public CommandLineRunner dataLoader(RegistrationService service) {
+        return args -> {
+            final Registration johnDoe = new Registration();
+            johnDoe.setEmail("john@doe.com");
+            johnDoe.setFirstName("Joe");
+            johnDoe.setLastName("Doe");
+            johnDoe.setSchool("Mason");
+    
+            service.registerStudent(johnDoe);
+    
+            final Registration janeDoe = new Registration();
+            janeDoe.setEmail("jane@doe.com");
+            janeDoe.setFirstName("Jane");
+            janeDoe.setLastName("Doe");
+            janeDoe.setSchool("Sycamore");
+    
+            service.registerStudent(janeDoe);
+        };
+    }
+    ```
+10. Build the project (Ctrl-F9).  The Spring Boot Devtools should reload your application.
 
-1. Modify the ```getStudentRegistration()``` and ```unregisterStudent()``` methods to validate that the ```email``` parameter passed in is a valid email address.
-   
-### Custom Error Messages
-
-1. The ```ValidationMessages.properties``` file already contains some custom error messages.  Modify your annotations to use them.
+11. Go back to your browser and try the ```/registrations``` endpoint again.  You should see some student data!  
