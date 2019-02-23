@@ -1,33 +1,79 @@
-# Persisting Data With Spring Data JPA
+# Spring Core
 
-### Create the Entity
+1. Add the following field to the ```RegistrationsController``` class:
 
-1. Open the ```Registration``` class.
-
-2. Add an ```@Entity``` annotation to the class.
-
-3. Add an ```@Id``` annotation to the appropriate field.
-
-    - What field should be the identifier?
+    ```java
+    private final RegistrationService registrationService;
+    ```
     
-### Create the Repository
+2. Since this field is final, we need to add a constructor which initializes this field:
 
-1. Open the ```RegistrationRepository```interface.
+    ```java
+    public RegistrationsController(RegistrationService registrationService) {
+        this.registrationService = registrationService;
+    }
+    ```
 
-2. Using Spring Data, modify ```RegistrationRepository``` so that it supports simple create, retrieve, update, and delete (CRUD)
+3. Refactor the ```getRegistrations()``` method to delegate to the injected ```RegistrationService```:
 
-    - How do we register an instance with Spring?
-        
-### Use the Repository
+    ```java
+    @GetMapping
+    public List<Registration> getRegistrations() {
+        return registrationService.getAllRegistrations();
+    }
+    ```
+    
+4. Right click the ```TecholympicsApplication``` class and select "Run TecholympicsApplication". The application should fail to start with the following message:
 
-1. Convert the ```RegistrationService``` to use the ```RegistrationRepository``` rather than using the in-memory map we have been using thus far.
+    ```text
+    ***************************
+    APPLICATION FAILED TO START
+    ***************************
+    
+    Description:
+    
+    Parameter 0 of constructor in org.techolympics.web.RegistrationsController required a bean of type 'org.techolympics.domain.service.RegistrationService' that could not be found.
+    
+    
+    Action:
+    
+    Consider defining a bean of type 'org.techolympics.domain.service.RegistrationService' in your configuration.
+    ```
 
-    - The ```Lists``` from the Google Guava library which might be useful.
+5. Spring doesn't have any beans of type ```RegistrationService```. Add the ```@Component``` stereotype annotation to the ```RegistrationServiceImpl``` class. 
 
-### Creating a Custom Finder (Optional)
+6. Now, right click the ```TecholympicsApplication``` class and select "Run TecholympicsApplication" again.  The application should start successfully.
+ 
+7. Open up the following URL in your browser:
 
-1. Add a new method to the ```RegistrationRepository``` which allows you to find a ```List<Registration>``` by school name.
+    http://localhost:8080/swagger-ui.html
+ 
+8. Locate the ```/registrations``` endpoint and "Try it out"
+    
+9. Currently, there are no registered students.  Modify the ```TecholympicsConfiguration``` class by adding the following method:
 
-2. Add a new method to the ```RegistrationService``` which uses this new method.
+    ```java
+    @Bean
+    public CommandLineRunner dataLoader(RegistrationService service) {
+        return args -> {
+            final Registration johnDoe = new Registration();
+            johnDoe.setEmail("john@doe.com");
+            johnDoe.setFirstName("Joe");
+            johnDoe.setLastName("Doe");
+            johnDoe.setSchool("Mason");
+    
+            service.registerStudent(johnDoe);
+    
+            final Registration janeDoe = new Registration();
+            janeDoe.setEmail("jane@doe.com");
+            janeDoe.setFirstName("Jane");
+            janeDoe.setLastName("Doe");
+            janeDoe.setSchool("Sycamore");
+    
+            service.registerStudent(janeDoe);
+        };
+    }
+    ```
+10. Build the project (Ctrl-F9).  The Spring Boot Devtools should reload your application.
 
-2. Add a new endpoint to the ```RegistrationsController``` which allows you to retrieve registrations by school name. 
+11. Go back to your browser and try the ```/registrations``` endpoint again.  You should see some student data!  
